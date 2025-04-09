@@ -7,6 +7,8 @@ import GamesPage from './pages/GamesPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
+import FindTeamPage from './pages/FindTeamPage';
+import FieldsPage from './pages/FieldsPage';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
 import { PrivateRoute } from './components/common/PrivateRoute';
@@ -19,6 +21,8 @@ const AppContent: React.FC = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/find-team" element={<FindTeamPage />} />
+        <Route path="/fields" element={<FieldsPage />} />
         <Route
           path="/profile"
           element={

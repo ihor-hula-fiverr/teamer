@@ -110,7 +110,7 @@ const HomePage: React.FC = () => {
                   <Button
                     variant="contained"
                     size="large"
-                    onClick={() => navigate('/teams')}
+                    onClick={() => navigate('/find-team')}
                     sx={{
                       bgcolor: '#1dbf73',
                       color: 'white',
@@ -125,6 +125,26 @@ const HomePage: React.FC = () => {
                     }}
                   >
                     Find Your Team
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    onClick={() => navigate('/teams')}
+                    sx={{
+                      color: '#1dbf73',
+                      borderColor: '#1dbf73',
+                      px: { xs: 3, sm: 4 },
+                      py: { xs: 1.2, sm: 1.5 },
+                      fontSize: { xs: '1rem', sm: '1.1rem' },
+                      textTransform: 'none',
+                      borderRadius: '4px',
+                      '&:hover': {
+                        borderColor: '#18a164',
+                        backgroundColor: 'rgba(29, 191, 115, 0.04)',
+                      },
+                    }}
+                  >
+                    Browse Teams
                   </Button>
                 </Box>
                 <Box 

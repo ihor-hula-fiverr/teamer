@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Container, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
-import { SportsSoccer, Group, Place, SportsScore } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, useTheme } from '@mui/material';
+import { Link, useLocation } from 'react-router-dom';
+import { Group, Place, SportsScore, Search, Stadium } from '@mui/icons-material';
 import { AppBar } from './AppBar';
-import { useApp } from '../../context/AppContext';
-
-const DRAWER_WIDTH = 240;
 
 interface MenuItem {
   text: string;
@@ -14,8 +11,9 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
+  { text: 'Find Your Team', icon: <Search />, path: '/find-team' },
+  { text: 'Fields', icon: <Stadium />, path: '/fields' },
   { text: 'Teams', icon: <Group />, path: '/teams' },
-  { text: 'Fields', icon: <Place />, path: '/fields' },
   { text: 'Games', icon: <SportsScore />, path: '/games' },
 ];
 
@@ -25,72 +23,54 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const navigate = useNavigate();
-  const { user } = useApp();
+  const location = useLocation();
+  const theme = useTheme();
 
-  const handleDrawerToggle = () => {
+  const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
 
-  const handleMenuItemClick = (path: string) => {
-    navigate(path);
-    setDrawerOpen(false);
-  };
-
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <AppBar onMenuClick={handleDrawerToggle} />
-      
-      {user && (
-        <Drawer
-          variant="temporary"
-          open={drawerOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            width: DRAWER_WIDTH,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
-              width: DRAWER_WIDTH,
-              boxSizing: 'border-box',
-              top: ['48px', '56px', '64px'],
-              height: 'auto',
-              bottom: 0,
-            },
-          }}
-        >
-          <List>
-            {menuItems.map((item) => (
-              <ListItem
-                button
-                key={item.text}
-                onClick={() => handleMenuItemClick(item.path)}
-              >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItem>
-            ))}
-          </List>
-        </Drawer>
-      )}
-
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      <AppBar onMenuClick={toggleDrawer} />
+      <Drawer
+        variant="temporary"
+        anchor="left"
+        open={drawerOpen}
+        onClose={toggleDrawer}
+        sx={{
+          '& .MuiDrawer-paper': {
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.primary,
+          },
+        }}
+      >
+        <List>
+          {menuItems.map((item) => (
+            <ListItem
+              button
+              key={item.text}
+              component={Link}
+              to={item.path}
+              selected={location.pathname === item.path}
+              onClick={toggleDrawer}
+            >
+              <ListItemIcon sx={{ color: 'inherit' }}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
-          mt: 8,
+          width: { sm: `calc(100% - ${theme.spacing(8)})` },
+          ml: { sm: theme.spacing(8) },
         }}
       >
-        <Container maxWidth={false} sx={{ mt: 3 }}>
-          {children}
-        </Container>
+        {children}
       </Box>
     </Box>
   );

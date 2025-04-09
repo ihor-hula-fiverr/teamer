@@ -1,22 +1,14 @@
 import React from 'react';
-import { Box, BoxProps } from '@mui/material';
+import { Box } from '@mui/material';
 
-interface LogoProps extends BoxProps {
+interface LogoProps {
   size?: number;
   showText?: boolean;
 }
 
-export const Logo: React.FC<LogoProps> = ({ size = 24, showText = true, ...props }) => {
+export const Logo: React.FC<LogoProps> = ({ size = 40, showText = true }) => {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1,
-        ...props.sx
-      }}
-      {...props}
-    >
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
       <Box
         component="img"
         src="/images/logo.svg"
@@ -24,22 +16,8 @@ export const Logo: React.FC<LogoProps> = ({ size = 24, showText = true, ...props
         sx={{
           width: size,
           height: size,
-          objectFit: 'contain'
         }}
       />
-      {showText && (
-        <Box
-          component="span"
-          sx={{
-            color: 'white',
-            fontSize: size * 0.8,
-            fontWeight: 'bold',
-            letterSpacing: '0.5px'
-          }}
-        >
-          teamer
-        </Box>
-      )}
     </Box>
   );
 }; 

@@ -64,7 +64,19 @@ export const AppBar: React.FC<AppBarProps> = ({ onMenuClick }) => {
         )}
         
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-          <Logo size={28} />
+          <Logo size={32} />
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              ml: 1, 
+              color: 'white',
+              fontWeight: 'bold',
+              letterSpacing: '0.5px',
+              display: { xs: 'none', sm: 'block' }
+            }}
+          >
+            teamer
+          </Typography>
         </Link>
 
         <Box sx={{ flexGrow: 1 }} />

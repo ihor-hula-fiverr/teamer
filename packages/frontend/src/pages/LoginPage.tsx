@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Container } from '@mui/material';
+import { Box, Container, Paper } from '@mui/material';
 import LoginForm from '../components/LoginForm';
 import { styled } from '@mui/material/styles';
 
@@ -9,30 +9,31 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   flexDirection: 'column',
   justifyContent: 'center',
   padding: theme.spacing(3),
-  background: 'linear-gradient(45deg, #f8f9fa 30%, #ffffff 90%)',
 }));
 
 const LoginPage: React.FC = () => {
   return (
-    <StyledContainer maxWidth={false}>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Box
-          component="img"
-          src="/logo.svg"
-          alt="Teamer Logo"
-          sx={{
-            width: 200,
-            height: 'auto',
-            mb: 4,
+    <StyledContainer maxWidth="sm">
+      <Box sx={{ mt: 8, mb: 4 }}>
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            p: 4,
+            bgcolor: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: 2,
           }}
-        />
-        <LoginForm />
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <LoginForm />
+          </Box>
+        </Paper>
       </Box>
     </StyledContainer>
   );

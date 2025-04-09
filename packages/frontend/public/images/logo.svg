@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" fill="#FF5722"/>
-  <g transform="translate(256, 256) scale(0.7)">
-    <circle cx="0" cy="0" r="128" fill="#424242"/>
-    <path d="M0 -128L102.564 0L0 128L-102.564 0L0 -128Z" fill="white"/>
-    <path d="M-102.564 0L0 -128L102.564 0M-102.564 0L0 128L102.564 0" fill="white"/>
-  </g>
+<svg width="512" height="512" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="512" height="512" fill="#FF5722"/>
+    
+    <!-- Soccer Ball -->
+    <g transform="translate(128,128) scale(1.6)">
+        <circle cx="80" cy="80" r="80" fill="#424242"/>
+        <path d="M80 0
+                 L120 30 L160 80 L120 130 L40 130 L0 80 L40 30 Z" 
+              fill="white"/>
+        <path d="M80 0 L40 30 M160 80 L120 30 M120 130 L160 80 M40 130 L0 80 M0 80 L40 30" 
+              stroke="#424242" stroke-width="2"/>
+    </g>
 </svg> 

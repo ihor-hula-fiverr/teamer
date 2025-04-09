@@ -32,7 +32,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
           if (response.ok) {
             const userData = await response.json();
-            setUser(userData);
+            console.log('Received user data:', userData); // Debug log
+            setUser({
+              id: userData.id,
+              email: userData.email,
+              name: userData.name,
+              createdAt: new Date(userData.createdAt || Date.now()),
+              updatedAt: new Date(userData.updatedAt || Date.now())
+            });
           } else {
             localStorage.removeItem('token');
           }
@@ -104,7 +111,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const data = await response.json();
       localStorage.setItem('token', data.token);
-      setUser(data.user);
+      console.log('Login response data:', data); // Debug log
+      setUser({
+        id: data.user.id,
+        email: data.user.email,
+        name: data.user.name,
+        createdAt: new Date(data.user.createdAt || Date.now()),
+        updatedAt: new Date(data.user.updatedAt || Date.now())
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
       throw err;

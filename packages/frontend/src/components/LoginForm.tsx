@@ -4,7 +4,6 @@ import {
   Button,
   TextField,
   Typography,
-  Paper,
   Divider,
   IconButton,
   InputAdornment,
@@ -15,15 +14,6 @@ import { Google as GoogleIcon, Visibility, VisibilityOff } from '@mui/icons-mate
 import { styled } from '@mui/material/styles';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(4),
-  width: '100%',
-  maxWidth: 400,
-  margin: '0 auto',
-  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-  borderRadius: theme.spacing(1),
-}));
 
 const StyledButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(1.5),
@@ -37,6 +27,22 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   '& .MuiOutlinedInput-root': {
     borderRadius: theme.spacing(0.75),
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    '& fieldset': {
+      borderColor: 'rgba(255, 255, 255, 0.1)',
+    },
+    '&:hover fieldset': {
+      borderColor: 'rgba(255, 255, 255, 0.2)',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: theme.palette.primary.main,
+    },
+  },
+  '& .MuiInputLabel-root': {
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  '& .MuiInputBase-input': {
+    color: 'white',
   },
 }));
 
@@ -78,8 +84,8 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <StyledPaper elevation={0}>
-      <Typography variant="h5" component="h1" gutterBottom align="center" fontWeight="bold">
+    <Box sx={{ width: '100%' }}>
+      <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ color: 'white', mb: 3 }}>
         Sign In to Teamer
       </Typography>
       {error && (
@@ -92,15 +98,23 @@ const LoginForm: React.FC = () => {
         fullWidth
         startIcon={<GoogleIcon />}
         onClick={handleGoogleSignIn}
+        sx={{
+          color: 'white',
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          '&:hover': {
+            borderColor: 'rgba(255, 255, 255, 0.4)',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          },
+        }}
       >
         Continue with Google
       </StyledButton>
       <Box sx={{ my: 3, display: 'flex', alignItems: 'center' }}>
-        <Divider sx={{ flex: 1 }} />
-        <Typography variant="body2" color="text.secondary" sx={{ mx: 2 }}>
+        <Divider sx={{ flex: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+        <Typography variant="body2" sx={{ mx: 2, color: 'rgba(255, 255, 255, 0.5)' }}>
           OR
         </Typography>
-        <Divider sx={{ flex: 1 }} />
+        <Divider sx={{ flex: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
       </Box>
       <form onSubmit={handleSubmit}>
         <StyledTextField
@@ -127,6 +141,7 @@ const LoginForm: React.FC = () => {
                   aria-label="toggle password visibility"
                   onClick={() => setShowPassword(!showPassword)}
                   edge="end"
+                  sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
                 >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
@@ -139,19 +154,34 @@ const LoginForm: React.FC = () => {
           variant="contained"
           fullWidth
           color="primary"
+          sx={{
+            backgroundColor: '#1dbf73',
+            '&:hover': {
+              backgroundColor: '#19a463',
+            },
+          }}
         >
           Sign In
         </StyledButton>
       </form>
       <Box sx={{ mt: 2, textAlign: 'center' }}>
-        <Typography variant="body2">
+        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
           Don't have an account?{' '}
-          <Link href="/register" underline="hover">
+          <Link 
+            href="/register" 
+            underline="hover"
+            sx={{ 
+              color: '#1dbf73',
+              '&:hover': {
+                color: '#19a463',
+              },
+            }}
+          >
             Sign up
           </Link>
         </Typography>
       </Box>
-    </StyledPaper>
+    </Box>
   );
 };
 

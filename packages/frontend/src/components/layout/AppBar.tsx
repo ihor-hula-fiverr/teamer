@@ -1,9 +1,28 @@
-import React from 'react';
-import { AppBar as MuiAppBar, Toolbar, Box, Button, IconButton, useTheme } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { 
+  AppBar as MuiAppBar, 
+  Toolbar, 
+  Box, 
+  Button, 
+  IconButton, 
+  useTheme, 
+  Typography, 
+  Avatar,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Divider
+} from '@mui/material';
+import { 
+  Menu as MenuIcon, 
+  Person as PersonIcon,
+  Logout as LogoutIcon,
+  Settings as SettingsIcon,
+  Help as HelpIcon
+} from '@mui/icons-material';
+import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../common';
-import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 
 interface AppBarProps {
   onMenuClick?: () => void;
@@ -11,7 +30,23 @@ interface AppBarProps {
 
 export const AppBar: React.FC<AppBarProps> = ({ onMenuClick }) => {
   const theme = useTheme();
-  const { user } = useApp();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    handleMenuClose();
+    navigate('/');
+  };
 
   return (
     <MuiAppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
@@ -44,9 +79,69 @@ export const AppBar: React.FC<AppBarProps> = ({ onMenuClick }) => {
             </Button>
           </Box>
         ) : (
-          <Button color="inherit" component={Link} to="/profile">
-            Profile
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton
+              onClick={handleMenuClick}
+              size="small"
+              sx={{ ml: 2 }}
+              aria-controls={anchorEl ? 'account-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={anchorEl ? 'true' : undefined}
+            >
+              <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.secondary.main }}>
+                <PersonIcon />
+              </Avatar>
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              id="account-menu"
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              onClick={handleMenuClose}
+              PaperProps={{
+                elevation: 0,
+                sx: {
+                  overflow: 'visible',
+                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                  mt: 1.5,
+                  '& .MuiAvatar-root': {
+                    width: 32,
+                    height: 32,
+                    ml: -0.5,
+                    mr: 1,
+                  },
+                },
+              }}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+              <MenuItem component={Link} to="/profile">
+                <ListItemIcon>
+                  <PersonIcon fontSize="small" />
+                </ListItemIcon>
+                Profile
+              </MenuItem>
+              <MenuItem component={Link} to="/settings">
+                <ListItemIcon>
+                  <SettingsIcon fontSize="small" />
+                </ListItemIcon>
+                Settings
+              </MenuItem>
+              <MenuItem component={Link} to="/help">
+                <ListItemIcon>
+                  <HelpIcon fontSize="small" />
+                </ListItemIcon>
+                Help
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={handleLogout}>
+                <ListItemIcon>
+                  <LogoutIcon fontSize="small" />
+                </ListItemIcon>
+                Logout
+              </MenuItem>
+            </Menu>
+          </Box>
         )}
       </Toolbar>
     </MuiAppBar>

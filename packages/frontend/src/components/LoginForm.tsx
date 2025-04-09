@@ -9,9 +9,12 @@ import {
   IconButton,
   InputAdornment,
   Link,
+  Alert,
 } from '@mui/material';
 import { Google as GoogleIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -43,6 +46,9 @@ const LoginForm: React.FC = () => {
     email: '',
     password: '',
   });
+  const [error, setError] = useState<string | null>(null);
+  const { login, signInWithGoogle } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -51,10 +57,24 @@ const LoginForm: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement login logic
-    console.log('Login attempt:', formData);
+    setError(null);
+    try {
+      await login(formData.email, formData.password);
+      navigate('/');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      navigate('/');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Google sign-in failed');
+    }
   };
 
   return (
@@ -62,11 +82,16 @@ const LoginForm: React.FC = () => {
       <Typography variant="h5" component="h1" gutterBottom align="center" fontWeight="bold">
         Sign In to Teamer
       </Typography>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
       <StyledButton
         variant="outlined"
         fullWidth
         startIcon={<GoogleIcon />}
-        onClick={() => console.log('Google sign-in')}
+        onClick={handleGoogleSignIn}
       >
         Continue with Google
       </StyledButton>
@@ -99,6 +124,7 @@ const LoginForm: React.FC = () => {
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
+                  aria-label="toggle password visibility"
                   onClick={() => setShowPassword(!showPassword)}
                   edge="end"
                 >
@@ -110,20 +136,21 @@ const LoginForm: React.FC = () => {
         />
         <StyledButton
           type="submit"
-          fullWidth
           variant="contained"
+          fullWidth
           color="primary"
-          sx={{ mb: 3 }}
         >
           Sign In
         </StyledButton>
       </form>
-      <Typography variant="body2" align="center">
-        Don't have an account?{' '}
-        <Link href="/register" underline="hover" fontWeight="bold">
-          Join Now
-        </Link>
-      </Typography>
+      <Box sx={{ mt: 2, textAlign: 'center' }}>
+        <Typography variant="body2">
+          Don't have an account?{' '}
+          <Link href="/register" underline="hover">
+            Sign up
+          </Link>
+        </Typography>
+      </Box>
     </StyledPaper>
   );
 };

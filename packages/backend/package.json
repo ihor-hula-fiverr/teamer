@@ -1,0 +1,47 @@
+{
+  "name": "@teamer/backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "init-db": "ts-node src/scripts/init-db.ts"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.6.0",
+    "@teamer/shared": "workspace:*",
+    "@types/dotenv": "^8.2.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-async-handler": "^1.2.0",
+    "express-session": "^1.18.1",
+    "helmet": "^7.0.0",
+    "morgan": "^1.10.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.14.1",
+    "reflect-metadata": "^0.2.1",
+    "typeorm": "^0.3.20",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/express-session": "^1.18.1",
+    "@types/morgan": "^1.9.4",
+    "@types/node": "^20.0.0",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth20": "^2.0.16",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.0"
+  }
+}

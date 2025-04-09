@@ -20,6 +20,7 @@ import {
   Search,
   EmojiEvents,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -45,37 +46,23 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) =
 
 const HomePage: React.FC = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const features = [
     {
-      icon: <Search />,
       title: 'Find Teams',
-      description: 'Discover local football teams that match your skill level and schedule.',
+      description: 'Discover and join local football teams that match your skill level and schedule.',
+      icon: '👥',
     },
     {
-      icon: <Group />,
-      title: 'Join Teams',
-      description: 'Connect with teams and players in your area and start playing.',
-    },
-    {
-      icon: <Place />,
       title: 'Book Fields',
-      description: 'Find and book available football fields for your games and practice.',
+      description: 'Easily find and book football fields in your area for practice or games.',
+      icon: '⚽',
     },
     {
-      icon: <SportsScore />,
       title: 'Organize Games',
-      description: 'Create and manage games, invite players, and track scores.',
-    },
-    {
-      icon: <CalendarMonth />,
-      title: 'Schedule Matches',
-      description: 'Plan your games and keep track of upcoming matches.',
-    },
-    {
-      icon: <EmojiEvents />,
-      title: 'Track Progress',
-      description: "Monitor your team's performance and celebrate victories.",
+      description: 'Create and manage football games with your team or with other teams.',
+      icon: '📅',
     },
   ];
 
@@ -84,79 +71,46 @@ const HomePage: React.FC = () => {
       {/* Hero Section */}
       <Box
         sx={{
-          bgcolor: 'primary.main',
-          color: 'primary.contrastText',
-          pt: { xs: 8, sm: 12 },
-          pb: { xs: 8, sm: 12 },
-          mb: 6,
+          background: 'linear-gradient(135deg, #1dbf73 0%, #0d8a4f 100%)',
+          color: 'white',
+          py: 8,
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
         <Container maxWidth="lg">
           <Grid container spacing={4} alignItems="center">
             <Grid item xs={12} md={6}>
-              <Typography
-                component="h1"
-                variant="h2"
-                sx={{
-                  fontWeight: 700,
-                  mb: 2,
-                }}
-              >
+              <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
                 Find Your Perfect Football Team
               </Typography>
-              <Typography
-                variant="h5"
-                sx={{
-                  mb: 4,
-                  opacity: 0.9,
-                }}
-              >
+              <Typography variant="h5" gutterBottom sx={{ mb: 4, opacity: 0.9 }}>
                 Connect with local teams, book fields, and organize games all in one place.
               </Typography>
               <Button
-                component={RouterLink}
-                to="/register"
                 variant="contained"
                 size="large"
+                onClick={() => navigate('/register')}
                 sx={{
                   bgcolor: 'white',
-                  color: 'primary.main',
+                  color: '#1dbf73',
                   '&:hover': {
-                    bgcolor: 'grey.100',
+                    bgcolor: 'rgba(255, 255, 255, 0.9)',
                   },
-                  mr: 2,
                 }}
               >
                 Get Started
-              </Button>
-              <Button
-                component={RouterLink}
-                to="/teams"
-                variant="outlined"
-                size="large"
-                sx={{
-                  borderColor: 'white',
-                  color: 'white',
-                  '&:hover': {
-                    borderColor: 'grey.100',
-                    bgcolor: 'rgba(255, 255, 255, 0.1)',
-                  },
-                }}
-              >
-                Browse Teams
               </Button>
             </Grid>
             <Grid item xs={12} md={6}>
               <Box
                 component="img"
                 src="/images/hero-image.svg"
-                alt="Football players"
+                alt="Football Team"
                 sx={{
                   width: '100%',
                   maxWidth: 500,
                   height: 'auto',
-                  display: 'block',
-                  margin: '0 auto',
                 }}
               />
             </Grid>
@@ -165,51 +119,71 @@ const HomePage: React.FC = () => {
       </Box>
 
       {/* Features Section */}
-      <Container maxWidth="lg" sx={{ mb: 8 }}>
-        <Typography
-          component="h2"
-          variant="h3"
-          align="center"
-          sx={{ mb: 6, fontWeight: 700 }}
-        >
-          Everything You Need
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Typography variant="h3" component="h2" align="center" gutterBottom sx={{ mb: 6 }}>
+          How Teamer Works
         </Typography>
         <Grid container spacing={4}>
           {features.map((feature, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <FeatureCard {...feature} />
+            <Grid item xs={12} md={4} key={index}>
+              <Card
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'transform 0.2s',
+                  '&:hover': {
+                    transform: 'translateY(-8px)',
+                  },
+                }}
+              >
+                <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+                  <Typography variant="h1" sx={{ mb: 2 }}>
+                    {feature.icon}
+                  </Typography>
+                  <Typography variant="h5" component="h3" gutterBottom>
+                    {feature.title}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    {feature.description}
+                  </Typography>
+                </CardContent>
+              </Card>
             </Grid>
           ))}
         </Grid>
       </Container>
 
       {/* CTA Section */}
-      <Box sx={{ bgcolor: 'grey.100', py: 8 }}>
-        <Container maxWidth="lg">
-          <Paper
+      <Box
+        sx={{
+          bgcolor: 'primary.main',
+          color: 'white',
+          py: 8,
+          textAlign: 'center',
+        }}
+      >
+        <Container maxWidth="md">
+          <Typography variant="h3" component="h2" gutterBottom>
+            Ready to Join the Game?
+          </Typography>
+          <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
+            Create your account and start connecting with football teams today.
+          </Typography>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate('/register')}
             sx={{
-              p: { xs: 3, md: 6 },
-              textAlign: 'center',
               bgcolor: 'white',
-              borderRadius: 4,
+              color: 'primary.main',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.9)',
+              },
             }}
           >
-            <Typography variant="h4" component="h3" gutterBottom sx={{ fontWeight: 700 }}>
-              Ready to Join?
-            </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: 'text.secondary' }}>
-              Start your journey with Teamer today
-            </Typography>
-            <Button
-              component={RouterLink}
-              to="/register"
-              variant="contained"
-              size="large"
-              sx={{ minWidth: 200 }}
-            >
-              Sign Up Now
-            </Button>
-          </Paper>
+            Sign Up Now
+          </Button>
         </Container>
       </Box>
     </Box>

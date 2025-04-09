@@ -19,7 +19,11 @@ const menuItems: MenuItem[] = [
   { text: 'Games', icon: <SportsScore />, path: '/games' },
 ];
 
-export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useApp();
@@ -34,7 +38,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <AppBar onMenuClick={handleDrawerToggle} />
       
       {user && (
@@ -74,9 +84,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         component="main"
         sx={{
           flexGrow: 1,
-          pt: ['48px', '56px', '64px'],
-          pb: 3,
-          width: '100%',
+          p: 3,
+          mt: 8,
         }}
       >
         <Container maxWidth="lg" sx={{ mt: 3 }}>

@@ -3,32 +3,46 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: '#FF5722', // Teamer orange
+      light: '#FF8A50',
+      dark: '#C41C00',
+      contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#dc004e',
+      main: '#424242', // Dark gray for the ball color
+      light: '#6D6D6D',
+      dark: '#1B1B1B',
+      contrastText: '#FFFFFF',
     },
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
-      fontSize: '2.5rem',
-      fontWeight: 500,
+      fontWeight: 700,
     },
     h2: {
-      fontSize: '2rem',
-      fontWeight: 500,
+      fontWeight: 600,
     },
     h3: {
-      fontSize: '1.75rem',
-      fontWeight: 500,
+      fontWeight: 600,
+    },
+    button: {
+      textTransform: 'none',
+      fontWeight: 600,
     },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none',
+          borderRadius: 8,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
         },
       },
     },

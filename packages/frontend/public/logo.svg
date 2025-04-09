@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="200" height="60" viewBox="0 0 200 60" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    .logo-text { font-family: Arial, sans-serif; font-weight: bold; }
-    .primary { fill: #1976d2; }
-    .secondary { fill: #2196f3; }
-  </style>
-  <g transform="translate(10, 40)">
-    <text class="logo-text primary" font-size="40">
-      Team
-      <tspan class="secondary">er</tspan>
-    </text>
-    <circle class="secondary" cx="160" cy="-15" r="8" />
-  </g>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" fill="#FF5722"/>
+  <circle cx="256" cy="256" r="128" fill="#424242"/>
+  <path d="M256 128L358.564 256L256 384L153.436 256L256 128Z" fill="white"/>
+  <path d="M153.436 256L256 128L358.564 256M153.436 256L256 384L358.564 256M153.436 256L256 256L358.564 256" fill="white"/>
 </svg> 

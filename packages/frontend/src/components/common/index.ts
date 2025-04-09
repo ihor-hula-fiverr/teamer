@@ -1,2 +1,3 @@
-export { default as LoadingScreen } from './LoadingScreen';
-export { default as ErrorScreen } from './ErrorScreen'; 
+export * from './Logo';
+export * from './LoadingScreen';
+export * from './ErrorScreen'; 

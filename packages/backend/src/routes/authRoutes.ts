@@ -9,51 +9,51 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 const router = Router();
 let userRepository: any;
 
-// Initialize repository
+// Initialize repository and configure Passport
 createDatabaseConnection().then(dataSource => {
   userRepository = dataSource.getRepository(User);
-});
 
-// Configure Passport
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID || '',
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-  callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8080/api/auth/google/callback',
-  scope: ['profile', 'email']
-}, async (accessToken, refreshToken, profile, done) => {
-  try {
-    // Check if user exists
-    let user = await userRepository.findOne({ where: { email: profile.emails?.[0]?.value } });
-    
-    if (!user) {
-      // Create new user if doesn't exist
-      user = userRepository.create({
-        email: profile.emails?.[0]?.value || '',
-        name: profile.displayName || '',
-        passwordHash: '', // No password needed for Google auth
-      });
-      await userRepository.save(user);
+  // Configure Passport
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID || '',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8080/api/auth/google/callback',
+    scope: ['profile', 'email']
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      // Check if user exists
+      let user = await userRepository.findOne({ where: { email: profile.emails?.[0]?.value } });
+      
+      if (!user) {
+        // Create new user if doesn't exist
+        user = userRepository.create({
+          email: profile.emails?.[0]?.value || '',
+          name: profile.displayName || '',
+          passwordHash: '', // No password needed for Google auth
+        });
+        await userRepository.save(user);
+      }
+
+      return done(null, user);
+    } catch (error) {
+      return done(error as Error);
     }
+  }));
 
-    return done(null, user);
-  } catch (error) {
-    return done(error as Error);
-  }
-}));
+  // Serialize user
+  passport.serializeUser((user: any, done) => {
+    done(null, user.id);
+  });
 
-// Serialize user
-passport.serializeUser((user: any, done) => {
-  done(null, user.id);
-});
-
-// Deserialize user
-passport.deserializeUser(async (id: string, done) => {
-  try {
-    const user = await userRepository.findOne({ where: { id } });
-    done(null, user);
-  } catch (error) {
-    done(error);
-  }
+  // Deserialize user
+  passport.deserializeUser(async (id: string, done) => {
+    try {
+      const user = await userRepository.findOne({ where: { id } });
+      done(null, user);
+    } catch (error) {
+      done(error);
+    }
+  });
 });
 
 // Google OAuth routes

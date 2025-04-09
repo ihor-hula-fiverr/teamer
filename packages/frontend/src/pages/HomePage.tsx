@@ -1,48 +1,7 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Paper,
-  Typography,
-  useTheme,
-  Card,
-  CardContent,
-  CardMedia,
-} from '@mui/material';
-import {
-  SportsScore,
-  Group,
-  Place,
-  CalendarMonth,
-  Search,
-  EmojiEvents,
-} from '@mui/icons-material';
+import { Box, Button, Grid, Typography, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}
-
-const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) => (
-  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-    <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
-      <Box sx={{ color: 'primary.main', mb: 2 }}>
-        {React.cloneElement(icon as React.ReactElement, { sx: { fontSize: 40 } })}
-      </Box>
-      <Typography variant="h6" component="h3" gutterBottom>
-        {title}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        {description}
-      </Typography>
-    </CardContent>
-  </Card>
-);
+import { HiArrowDown } from 'react-icons/hi';
 
 const HomePage: React.FC = () => {
   const theme = useTheme();
@@ -51,140 +10,259 @@ const HomePage: React.FC = () => {
   const features = [
     {
       title: 'Find Teams',
-      description: 'Discover and join local football teams that match your skill level and schedule.',
+      description: 'Discover local football teams and join the one that matches your skill level and schedule.',
       icon: '👥',
     },
     {
       title: 'Book Fields',
-      description: 'Easily find and book football fields in your area for practice or games.',
+      description: 'Easily find and book football fields in your area with our simple booking system.',
       icon: '⚽',
     },
     {
       title: 'Organize Games',
-      description: 'Create and manage football games with your team or with other teams.',
+      description: 'Create and manage games, invite players, and keep track of your team\'s schedule.',
       icon: '📅',
+    },
+    {
+      title: 'Track Progress',
+      description: 'Monitor your team\'s performance and celebrate victories.',
+      icon: '📊',
     },
   ];
 
+  const scrollToFeatures = () => {
+    const featuresSection = document.getElementById('features');
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <Box>
+    <Box 
+      sx={{ 
+        minHeight: '100vh',
+        bgcolor: '#011627', // Dark blue background like Fiverr's
+        color: 'white',
+        overflow: 'hidden',
+      }}
+    >
       {/* Hero Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #1dbf73 0%, #0d8a4f 100%)',
-          color: 'white',
-          py: 8,
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
           position: 'relative',
-          overflow: 'hidden',
+          pt: { xs: 8, md: 0 },
+          pl: { xs: 3, sm: 4, md: 6 }, // Reduced left padding
+          pr: { xs: 3, sm: 4 },
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'radial-gradient(circle at 30% 50%, rgba(1, 22, 39, 0) 0%, #011627 70%)',
+            zIndex: 1,
+          },
         }}
       >
-        <Container maxWidth="lg">
-          <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
-                Find Your Perfect Football Team
-              </Typography>
-              <Typography variant="h5" gutterBottom sx={{ mb: 4, opacity: 0.9 }}>
-                Connect with local teams, book fields, and organize games all in one place.
-              </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={() => navigate('/register')}
+        <Box sx={{ position: 'relative', zIndex: 2, width: '100%' }}>
+          <Grid container spacing={4} alignItems="center" sx={{ margin: 0, width: '100%' }}>
+            <Grid item xs={12} md={6} sx={{ pl: '0 !important' }}>
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: '#1dbf73',
+                    mb: 2,
+                    fontWeight: 500,
+                  }}
+                >
+                  Teamer
+                </Typography>
+                <Typography
+                  variant="h1"
+                  sx={{
+                    fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem', lg: '4rem' },
+                    fontWeight: 700,
+                    mb: 3,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Join a football team
+                  <br />
+                  in a few clicks
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    mb: 4,
+                    opacity: 0.9,
+                    color: '#94A3B8',
+                    maxWidth: 500,
+                    fontSize: { xs: '1.2rem', sm: '1.4rem', md: '1.5rem' },
+                  }}
+                >
+                  Find local teams, book fields, and organize games all in one place
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={() => navigate('/teams')}
+                    sx={{
+                      bgcolor: '#1dbf73',
+                      color: 'white',
+                      px: { xs: 3, sm: 4 },
+                      py: { xs: 1.2, sm: 1.5 },
+                      fontSize: { xs: '1rem', sm: '1.1rem' },
+                      textTransform: 'none',
+                      borderRadius: '4px',
+                      '&:hover': {
+                        bgcolor: '#18a164',
+                      },
+                    }}
+                  >
+                    Find Your Team
+                  </Button>
+                </Box>
+                <Box 
+                  sx={{ 
+                    mt: 6, 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    gap: 1,
+                    color: '#94A3B8',
+                  }}
+                >
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    ★★★★★ 4.8/5
+                  </Typography>
+                  <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                    from 120+ teams
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ pl: '0 !important' }}>
+              <Box
                 sx={{
-                  bgcolor: 'white',
-                  color: '#1dbf73',
-                  '&:hover': {
-                    bgcolor: 'rgba(255, 255, 255, 0.9)',
+                  position: 'relative',
+                  display: { xs: 'none', md: 'block' },
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: -100,
+                    right: -100,
+                    width: 200,
+                    height: 200,
+                    background: 'radial-gradient(circle, rgba(29, 191, 115, 0.2) 0%, rgba(29, 191, 115, 0) 70%)',
+                    borderRadius: '50%',
+                    filter: 'blur(40px)',
                   },
                 }}
               >
-                Get Started
-              </Button>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Box
-                component="img"
-                src="/images/hero-image.svg"
-                alt="Football Team"
-                sx={{
-                  width: '100%',
-                  maxWidth: 500,
-                  height: 'auto',
-                }}
-              />
+                <Box
+                  component="img"
+                  src="/footballer.png"
+                  alt="Football player"
+                  sx={{
+                    width: '100%',
+                    maxWidth: { md: '100%', lg: '800px' },
+                    height: 'auto',
+                    transform: 'scale(1.2)',
+                    position: 'relative',
+                    zIndex: 1,
+                  }}
+                />
+              </Box>
             </Grid>
           </Grid>
-        </Container>
+        </Box>
       </Box>
 
       {/* Features Section */}
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Typography variant="h3" component="h2" align="center" gutterBottom sx={{ mb: 6 }}>
-          How Teamer Works
+      <Box
+        id="features"
+        sx={{
+          py: { xs: 8, md: 12 },
+          px: { xs: 4, sm: 6, md: 8, lg: 12 },
+          bgcolor: '#011627',
+        }}
+      >
+        <Typography
+          variant="h2"
+          align="center"
+          sx={{
+            mb: 2,
+            fontWeight: 700,
+            color: 'white',
+            fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+          }}
+        >
+          Why use Teamer
+        </Typography>
+        <Typography
+          variant="h5"
+          align="center"
+          sx={{
+            mb: 8,
+            mx: 'auto',
+            color: 'rgba(255, 255, 255, 0.9)',
+            fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
+            maxWidth: { xs: '100%', md: '800px' },
+          }}
+        >
+          Teamer is the easiest, fastest, and most reliable way to find a team or book a field. Here's why:
         </Typography>
         <Grid container spacing={4}>
           {features.map((feature, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <Card
+            <Grid item xs={12} sm={6} md={3} key={index}>
+              <Box
                 sx={{
+                  p: 4,
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: 2,
                   transition: 'transform 0.2s',
                   '&:hover': {
                     transform: 'translateY(-8px)',
                   },
                 }}
               >
-                <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
-                  <Typography variant="h1" sx={{ mb: 2 }}>
-                    {feature.icon}
-                  </Typography>
-                  <Typography variant="h5" component="h3" gutterBottom>
-                    {feature.title}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    {feature.description}
-                  </Typography>
-                </CardContent>
-              </Card>
+                <Typography
+                  variant="h3"
+                  sx={{
+                    mb: 2,
+                    fontSize: '2.5rem',
+                    color: 'white',
+                  }}
+                >
+                  {feature.icon}
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    mb: 2,
+                    fontWeight: 600,
+                    color: 'white',
+                  }}
+                >
+                  {feature.title}
+                </Typography>
+                <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                  {feature.description}
+                </Typography>
+              </Box>
             </Grid>
           ))}
         </Grid>
-      </Container>
-
-      {/* CTA Section */}
-      <Box
-        sx={{
-          bgcolor: 'primary.main',
-          color: 'white',
-          py: 8,
-          textAlign: 'center',
-        }}
-      >
-        <Container maxWidth="md">
-          <Typography variant="h3" component="h2" gutterBottom>
-            Ready to Join the Game?
-          </Typography>
-          <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
-            Create your account and start connecting with football teams today.
-          </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => navigate('/register')}
-            sx={{
-              bgcolor: 'white',
-              color: 'primary.main',
-              '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.9)',
-              },
-            }}
-          >
-            Sign Up Now
-          </Button>
-        </Container>
       </Box>
     </Box>
   );

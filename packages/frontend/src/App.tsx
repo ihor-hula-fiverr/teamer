@@ -1,49 +1,24 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { AppProvider, useApp } from './context/AppContext';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { PrivateRoute } from './components/common/PrivateRoute';
+import { Box } from '@mui/material';
 import HomePage from './pages/HomePage';
 import TeamsPage from './pages/TeamsPage';
-import FieldsPage from './pages/FieldsPage';
 import GamesPage from './pages/GamesPage';
-import ProfilePage from './pages/ProfilePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import { LoadingScreen } from './components/common/LoadingScreen';
-import { ErrorScreen } from './components/common/ErrorScreen';
+import { AppProvider } from './context/AppContext';
+import { AuthProvider } from './context/AuthContext';
+import { PrivateRoute } from './components/common/PrivateRoute';
 import { Layout } from './components/layout/Layout';
 
 const AppContent: React.FC = () => {
-  const { loading, error } = useApp();
-
-  if (loading) {
-    return <LoadingScreen />;
-  }
-
-  if (error) {
-    return <ErrorScreen error={error} />;
-  }
-
   return (
     <Layout>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
         <Route
           path="/teams"
           element={
             <PrivateRoute>
               <TeamsPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/fields"
-          element={
-            <PrivateRoute>
-              <FieldsPage />
             </PrivateRoute>
           }
         />
@@ -55,14 +30,6 @@ const AppContent: React.FC = () => {
             </PrivateRoute>
           }
         />
-        <Route
-          path="/profile"
-          element={
-            <PrivateRoute>
-              <ProfilePage />
-            </PrivateRoute>
-          }
-        />
       </Routes>
     </Layout>
   );
@@ -70,11 +37,20 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <AppProvider>
+    <Box 
+      sx={{ 
+        minHeight: '100vh',
+        bgcolor: '#011627',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <AuthProvider>
-        <AppContent />
+        <AppProvider>
+          <AppContent />
+        </AppProvider>
       </AuthProvider>
-    </AppProvider>
+    </Box>
   );
 };
 

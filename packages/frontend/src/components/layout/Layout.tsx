@@ -88,7 +88,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           mt: 8,
         }}
       >
-        <Container maxWidth="lg" sx={{ mt: 3 }}>
+        <Container maxWidth={false} sx={{ mt: 3 }}>
           {children}
         </Container>
       </Box>

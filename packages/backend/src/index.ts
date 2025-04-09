@@ -8,6 +8,7 @@ import userRoutes from './routes/userRoutes';
 import teamRoutes from './routes/teamRoutes';
 import fieldRoutes from './routes/fieldRoutes';
 import gameRoutes from './routes/gameRoutes';
+import authRoutes from './routes/authRoutes';
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
     message: 'Teamer API',
     version: '1.0.0',
     endpoints: {
+      auth: '/api/auth',
       users: '/api/users',
       teams: '/api/teams',
       fields: '/api/fields',
@@ -33,6 +35,7 @@ app.get('/', (req, res) => {
 });
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/fields', fieldRoutes);

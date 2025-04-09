@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
 
+const API_BASE_URL = 'http://localhost:8080/api';
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -8,6 +10,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,18 +21,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if user is logged in
     const checkAuth = async () => {
       try {
         const token = localStorage.getItem('token');
         if (token) {
-          // TODO: Implement token validation and user fetch
-          setLoading(false);
-        } else {
-          setLoading(false);
+          const response = await fetch(`${API_BASE_URL}/auth/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.ok) {
+            const userData = await response.json();
+            setUser(userData);
+          } else {
+            localStorage.removeItem('token');
+          }
         }
       } catch (err) {
-        setError('Failed to check authentication status');
+        console.error('Auth check failed:', err);
+      } finally {
         setLoading(false);
       }
     };
@@ -37,26 +47,71 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-      // TODO: Implement login API call
-      setLoading(false);
-    } catch (err) {
-      setError('Failed to login');
-      setLoading(false);
-    }
-  };
-
   const register = async (email: string, password: string, name: string) => {
     try {
       setLoading(true);
       setError(null);
-      // TODO: Implement register API call
-      setLoading(false);
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, name }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Registration failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      setUser(data.user);
     } catch (err) {
-      setError('Failed to register');
+      setError(err instanceof Error ? err.message : 'Registration failed');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Login failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      setUser(data.user);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      window.location.href = `${API_BASE_URL}/auth/google`;
+    } catch (err) {
+      setError('Google sign in failed');
+      throw err;
+    } finally {
       setLoading(false);
     }
   };
@@ -67,15 +122,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       localStorage.removeItem('token');
       setUser(null);
-      setLoading(false);
     } catch (err) {
-      setError('Failed to logout');
+      setError('Logout failed');
+      throw err;
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        error,
+        login,
+        register,
+        logout,
+        signInWithGoogle,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

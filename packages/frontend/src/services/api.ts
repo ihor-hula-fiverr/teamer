@@ -1,6 +1,6 @@
 import { User, Team, Field, Game, FieldSchedule } from '@teamer/shared';
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 // User API
 export const userApi = {

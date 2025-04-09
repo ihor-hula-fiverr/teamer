@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Grid, Typography, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { HiArrowDown } from 'react-icons/hi';
+import ShowcaseAnimation from '../components/showcase/ShowcaseAnimation';
 
 const HomePage: React.FC = () => {
   const theme = useTheme();
@@ -50,8 +50,7 @@ const HomePage: React.FC = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
+          display: 'flex',          
           position: 'relative',
           pt: { xs: 8, md: 0 },
           pl: { xs: 3, sm: 4, md: 6 }, // Reduced left padding
@@ -69,7 +68,7 @@ const HomePage: React.FC = () => {
         }}
       >
         <Box sx={{ position: 'relative', zIndex: 2, width: '100%' }}>
-          <Grid container spacing={4} alignItems="center" sx={{ margin: 0, width: '100%' }}>
+          <Grid container spacing={4} sx={{ margin: 0, width: '100%' }}>
             <Grid item xs={12} md={6} sx={{ pl: '0 !important' }}>
               <Box>
                 <Typography
@@ -147,37 +146,7 @@ const HomePage: React.FC = () => {
               </Box>
             </Grid>
             <Grid item xs={12} md={6} sx={{ pl: '0 !important' }}>
-              <Box
-                sx={{
-                  position: 'relative',
-                  display: { xs: 'none', md: 'block' },
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: -100,
-                    right: -100,
-                    width: 200,
-                    height: 200,
-                    background: 'radial-gradient(circle, rgba(29, 191, 115, 0.2) 0%, rgba(29, 191, 115, 0) 70%)',
-                    borderRadius: '50%',
-                    filter: 'blur(40px)',
-                  },
-                }}
-              >
-                <Box
-                  component="img"
-                  src="/footballer.png"
-                  alt="Football player"
-                  sx={{
-                    width: '100%',
-                    maxWidth: { md: '100%', lg: '800px' },
-                    height: 'auto',
-                    transform: 'scale(1.2)',
-                    position: 'relative',
-                    zIndex: 1,
-                  }}
-                />
-              </Box>
+              <ShowcaseAnimation />
             </Grid>
           </Grid>
         </Box>

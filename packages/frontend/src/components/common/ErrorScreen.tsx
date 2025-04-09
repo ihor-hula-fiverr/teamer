@@ -1,27 +1,40 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
+import { Error as ErrorIcon } from '@mui/icons-material';
 
 interface ErrorScreenProps {
   error: string;
 }
 
-const ErrorScreen: React.FC<ErrorScreenProps> = ({ error }) => {
+export const ErrorScreen: React.FC<ErrorScreenProps> = ({ error }) => {
   return (
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
+        p: 2,
       }}
     >
-      <Typography variant="h5" color="error" gutterBottom>
-        Error
-      </Typography>
-      <Typography color="text.secondary">{error}</Typography>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 3,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          maxWidth: 400,
+        }}
+      >
+        <ErrorIcon color="error" sx={{ fontSize: 48, mb: 2 }} />
+        <Typography variant="h6" color="error" gutterBottom>
+          Error
+        </Typography>
+        <Typography color="text.secondary" align="center">
+          {error}
+        </Typography>
+      </Paper>
     </Box>
   );
-};
-
-export default ErrorScreen; 
+}; 

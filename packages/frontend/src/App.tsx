@@ -4,6 +4,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import { AppProvider, useApp } from './context/AppContext';
 import { theme } from './theme';
 import { LoadingScreen, ErrorScreen } from './components/common';
+import { Layout } from './components/layout';
 import { HomePage, TeamsPage, FieldsPage, GamesPage, ProfilePage, LoginPage, RegisterPage } from './pages';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -32,43 +33,45 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route
-        path="/teams"
-        element={
-          <PrivateRoute>
-            <TeamsPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/fields"
-        element={
-          <PrivateRoute>
-            <FieldsPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/games"
-        element={
-          <PrivateRoute>
-            <GamesPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <PrivateRoute>
-            <ProfilePage />
-          </PrivateRoute>
-        }
-      />
-    </Routes>
+    <Layout>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/teams"
+          element={
+            <PrivateRoute>
+              <TeamsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/fields"
+          element={
+            <PrivateRoute>
+              <FieldsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/games"
+          element={
+            <PrivateRoute>
+              <GamesPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <ProfilePage />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </Layout>
   );
 };
 

@@ -29,7 +29,7 @@ export const AppBar: React.FC<AppBarProps> = ({ onMenuClick }) => {
         )}
         
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-          <Logo size={32} sx={{ mr: 1 }} />
+          <Logo size={28} />
         </Link>
 
         <Box sx={{ flexGrow: 1 }} />

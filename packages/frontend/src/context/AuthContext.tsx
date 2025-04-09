@@ -44,7 +44,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    checkAuth();
+    // Check for Google OAuth callback
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    if (token) {
+      localStorage.setItem('token', token);
+      checkAuth();
+      // Remove token from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+      checkAuth();
+    }
   }, []);
 
   const register = async (email: string, password: string, name: string) => {

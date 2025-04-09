@@ -69,7 +69,7 @@ const FindTeamPage: React.FC = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Container maxWidth="md">
+      <Container>
         <Box sx={{ mt: 4, mb: 6 }}>
           <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ color: 'primary.main' }}>
             Find Your Team
@@ -116,51 +116,73 @@ const FindTeamPage: React.FC = () => {
         <Box sx={{ mb: 4 }}>
           <Grid container spacing={3}>
             {games.map((game) => (
-              <Grid item xs={12} key={game.id}>
-                <Card sx={{ borderRadius: 2 }}>
-                  <CardContent>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} md={4}>
-                        <Typography variant="h6" gutterBottom>
-                          {game.field.name}
+              <Grid item xs={12} sm={6} md={4} lg={3} key={game.id}>
+                <Card sx={{ borderRadius: 2, height: '100%', display: 'flex', flexDirection: 'column', maxWidth: 300, mx: 'auto' }}>
+                  <CardContent sx={{ flex: 1, p: 2, pb: '8px !important' }}>
+                    <Box sx={{ position: 'relative', paddingTop: '100%', mb: 1.5 }}>
+                      <Box
+                        component="img"
+                        src={`/assets/images/fields/${game.field.id}.jpg`}
+                        alt="Football field"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/assets/images/default-field.jpg';
+                          target.onerror = null;
+                        }}
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          borderRadius: 1
+                        }}
+                      />
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)',
+                          height: '50%',
+                          borderRadius: 1
+                        }}
+                      />
+                    </Box>
+                    <Typography variant="subtitle1" gutterBottom noWrap sx={{ fontWeight: 'bold' }}>
+                      {game.field.name}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <LocationOn sx={{ mr: 1, color: 'text.secondary', fontSize: '1rem' }} />
+                      <Typography variant="body2" color="text.secondary" noWrap>
+                        {game.field.location}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <AccessTime sx={{ mr: 1, color: 'text.secondary', fontSize: '1rem' }} />
+                      <Typography variant="body2" color="text.secondary">
+                        {game.startTime ? format(new Date(game.startTime), 'HH:mm') : 'Time TBD'}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ textAlign: 'center', mb: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                        <Typography variant="body2" noWrap sx={{ flex: 1 }}>{game.teamA.name}</Typography>
+                        <Typography variant="caption" sx={{ mx: 1, color: 'text.secondary' }}>vs</Typography>
+                        <Typography variant="body2" noWrap sx={{ flex: 1 }}>{game.teamB.name}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Group sx={{ mr: 0.5, color: 'text.secondary', fontSize: '0.875rem' }} />
+                        <Typography variant="caption" color="text.secondary">
+                          {game.field.capacity} players
                         </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <LocationOn sx={{ mr: 1, color: 'text.secondary' }} />
-                          <Typography variant="body2" color="text.secondary">
-                            {game.field.location}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <AccessTime sx={{ mr: 1, color: 'text.secondary' }} />
-                          <Typography variant="body2" color="text.secondary">
-                            {game.startTime ? format(new Date(game.startTime), 'HH:mm') : 'Time TBD'}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={12} md={8}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
-                          <Box sx={{ textAlign: 'center' }}>
-                            <Typography variant="subtitle1">{game.teamA.name}</Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                              <Group sx={{ mr: 1, color: 'text.secondary' }} />
-                              <Typography variant="body2" color="text.secondary">
-                                {game.field.capacity} players
-                              </Typography>
-                            </Box>
-                          </Box>
-                          <Typography variant="h5" sx={{ mx: 2 }}>
-                            vs
-                          </Typography>
-                          <Box sx={{ textAlign: 'center' }}>
-                            <Typography variant="subtitle1">{game.teamB.name}</Typography>
-                          </Box>
-                        </Box>
-                      </Grid>
-                    </Grid>
+                      </Box>
+                    </Box>
                   </CardContent>
                   <Divider />
-                  <CardActions>
-                    <Button size="large" fullWidth variant="contained" color="primary">
+                  <CardActions sx={{ p: 1 }}>
+                    <Button size="small" fullWidth variant="contained" color="primary">
                       Join Game
                     </Button>
                   </CardActions>

@@ -37,7 +37,7 @@ async function generateTestData() {
 
     // Generate users
     console.log('Generating users...');
-    const users = Array.from({ length: 20 }, () => {
+    const users = Array.from({ length: 200 }, () => {
       const user = new User();
       user.name = faker.person.fullName();
       user.email = faker.internet.email();
@@ -45,11 +45,11 @@ async function generateTestData() {
       return user;
     });
     await userRepository.save(users);
-    console.log('Generated 20 users');
+    console.log('Generated 200 users');
 
     // Generate teams
     console.log('Generating teams...');
-    const teams = Array.from({ length: 10 }, () => {
+    const teams = Array.from({ length: 100 }, () => {
       const team = new Team();
       team.name = faker.company.name();
       team.description = faker.lorem.sentence();
@@ -57,12 +57,12 @@ async function generateTestData() {
       return team;
     });
     await teamRepository.save(teams);
-    console.log('Generated 10 teams');
+    console.log('Generated 100 teams');
 
     // Add users to teams
     console.log('Adding users to teams...');
     for (const team of teams) {
-      const membersCount = faker.number.int({ min: 5, max: 11 });
+      const membersCount = faker.number.int({ min: 7, max: 15 });
       const selectedUsers = faker.helpers.shuffle(users).slice(0, membersCount);
       
       for (const user of selectedUsers) {
@@ -77,32 +77,33 @@ async function generateTestData() {
 
     // Generate fields
     console.log('Generating fields...');
-    const fields = Array.from({ length: 5 }, () => {
+    const fields = Array.from({ length: 50 }, (_, index) => {
       const field = new Field();
       field.name = faker.company.name() + ' Field';
-      field.location = faker.location.streetAddress();
-      field.capacity = faker.number.int({ min: 5, max: 11 }) * 2;
+      field.location = index < 20 ? 'Kyiv' : faker.location.city(); // First 20 fields in Kyiv
+      field.capacity = faker.number.int({ min: 10, max: 22 });
       field.description = faker.lorem.sentence();
       field.pricePerHour = faker.number.int({ min: 50, max: 200 });
+      field.imageUrl = `/assets/images/${(index % 10) + 1}.jpg`; // Cycle through images 1-10
       return field;
     });
     await fieldRepository.save(fields);
-    console.log('Generated 5 fields');
+    console.log('Generated 50 fields');
 
     // Generate field schedules
     console.log('Generating field schedules...');
     for (const field of fields) {
-      const schedules = Array.from({ length: 7 }, (_, i) => {
+      const schedules = Array.from({ length: 30 }, (_, i) => { // Generate schedules for next 30 days
         const schedule = new FieldSchedule();
         schedule.field = field;
         schedule.date = new Date(Date.now() + i * 24 * 60 * 60 * 1000);
         
         const startTime = new Date(schedule.date);
-        startTime.setHours(9, 0, 0, 0);
+        startTime.setHours(8, 0, 0, 0); // Start earlier at 8 AM
         schedule.startTime = startTime.toISOString();
         
         const endTime = new Date(schedule.date);
-        endTime.setHours(21, 0, 0, 0);
+        endTime.setHours(22, 0, 0, 0); // End later at 10 PM
         schedule.endTime = endTime.toISOString();
         
         schedule.status = 'available';
@@ -114,27 +115,43 @@ async function generateTestData() {
 
     // Generate games
     console.log('Generating games...');
-    const games = Array.from({ length: 10 }, (_, i) => {
+    const kyivFields = fields.filter(f => f.location === 'Kyiv');
+    const games = Array.from({ length: 1000 }, (_, i) => {
       const game = new Game();
-      game.field = faker.helpers.arrayElement(fields);
+      game.field = i < 400 ? faker.helpers.arrayElement(kyivFields) : faker.helpers.arrayElement(fields); // 40% of games in Kyiv
+      
+      // Ensure teams are different
       game.teamA = faker.helpers.arrayElement(teams);
-      game.teamB = faker.helpers.arrayElement(teams.filter(t => t.id !== game.teamA.id));
-      game.date = new Date(Date.now() + i * 2 * 24 * 60 * 60 * 1000);
+      do {
+        game.teamB = faker.helpers.arrayElement(teams);
+      } while (game.teamB.id === game.teamA.id);
+      
+      // Create games spread across next 4 weeks
+      const today = new Date();
+      game.date = new Date(today);
+      game.date.setDate(today.getDate() + faker.number.int({ min: 0, max: 28 })); // Random day in next 4 weeks
+      
+      // Set game time between 8 AM and 10 PM with duration between 1.5 and 2.5 hours
+      const startHour = faker.number.int({ min: 8, max: 20 }); // Latest start at 8 PM to ensure end before 10 PM
       game.startTime = new Date(game.date);
-      game.startTime.setHours(18, 0, 0, 0);
-      game.endTime = new Date(game.date);
-      game.endTime.setHours(20, 0, 0, 0);
+      game.startTime.setHours(startHour, faker.helpers.arrayElement([0, 30]), 0, 0);
+      
+      game.endTime = new Date(game.startTime);
+      const durationInMinutes = faker.number.int({ min: 90, max: 150 }); // 1.5 to 2.5 hours
+      game.endTime.setMinutes(game.endTime.getMinutes() + durationInMinutes);
+      
       game.status = faker.helpers.arrayElement(['scheduled', 'in_progress', 'completed']);
+      
       if (game.status === 'completed') {
         game.score = {
-          teamA: faker.number.int({ min: 0, max: 5 }),
-          teamB: faker.number.int({ min: 0, max: 5 })
+          teamA: faker.number.int({ min: 0, max: 7 }),
+          teamB: faker.number.int({ min: 0, max: 7 })
         };
       }
       return game;
     });
     await gameRepository.save(games);
-    console.log('Generated 10 games');
+    console.log('Generated 1000 games');
 
     console.log('Test data generation completed successfully!');
   } catch (error) {

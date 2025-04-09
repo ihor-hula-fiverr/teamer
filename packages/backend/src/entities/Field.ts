@@ -22,6 +22,9 @@ export class Field implements Omit<IField, 'id'> {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   pricePerHour?: number;
 
+  @Column({ nullable: true })
+  imageUrl?: string;
+
   @OneToMany(() => FieldSchedule, schedule => schedule.field)
   schedules!: FieldSchedule[];
 } 

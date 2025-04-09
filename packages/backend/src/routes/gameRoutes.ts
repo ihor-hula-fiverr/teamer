@@ -54,7 +54,8 @@ router.get('/search', async (req, res) => {
         name: game.field.name,
         location: game.field.location,
         capacity: game.field.capacity,
-        pricePerHour: game.field.pricePerHour
+        pricePerHour: game.field.pricePerHour,
+        imageUrl: game.field.imageUrl || `/assets/images/fields/${game.field.id}.jpg`
       },
       teamA: {
         id: game.teamA.id,

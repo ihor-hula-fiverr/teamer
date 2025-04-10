@@ -27,6 +27,7 @@ interface Game {
     location: string;
     capacity: number;
     pricePerHour?: number;
+    imageUrl?: string;
   };
   teamA: {
     id: string;
@@ -122,7 +123,7 @@ const FindTeamPage: React.FC = () => {
                     <Box sx={{ position: 'relative', paddingTop: '100%', mb: 1.5 }}>
                       <Box
                         component="img"
-                        src={`/assets/images/fields/${game.field.id}.jpg`}
+                        src={game.field.imageUrl || `/assets/images/fields/${game.field.id}.jpg`}
                         alt="Football field"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;

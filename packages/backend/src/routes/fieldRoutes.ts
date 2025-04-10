@@ -2,22 +2,25 @@ import { Router } from 'express';
 import { createDatabaseConnection } from '../config/typeorm';
 import { Field } from '../entities/Field';
 import { FieldSchedule } from '../entities/FieldSchedule';
+import { User } from '../entities/User';
 import asyncHandler from 'express-async-handler';
 
 const router = Router();
 let fieldRepository: any;
 let fieldScheduleRepository: any;
+let userRepository: any;
 
 // Initialize repositories when database connection is established
 createDatabaseConnection().then(dataSource => {
   fieldRepository = dataSource.getRepository(Field);
   fieldScheduleRepository = dataSource.getRepository(FieldSchedule);
+  userRepository = dataSource.getRepository(User);
 });
 
 // Get all fields
 router.get('/', asyncHandler(async (req, res) => {
   const fields = await fieldRepository.find({
-    relations: ['schedules']
+    relations: ['schedules', 'manager']
   });
   res.json(fields);
 }));
@@ -26,7 +29,7 @@ router.get('/', asyncHandler(async (req, res) => {
 router.get('/:id', asyncHandler(async (req, res) => {
   const field = await fieldRepository.findOne({
     where: { id: req.params.id },
-    relations: ['schedules']
+    relations: ['schedules', 'manager']
   });
   
   if (!field) {
@@ -38,14 +41,47 @@ router.get('/:id', asyncHandler(async (req, res) => {
 
 // Create field
 router.post('/', asyncHandler(async (req, res) => {
-  const { name, location, capacity, description, pricePerHour } = req.body;
+  const { 
+    name, 
+    location, 
+    capacity, 
+    description, 
+    pricePerHour,
+    address,
+    maxPlayersCount,
+    fieldSize,
+    hasShower,
+    hasCover,
+    priceFrom,
+    priceTo,
+    managerId
+  } = req.body;
+  
+  const manager = await userRepository.findOneBy({ id: managerId });
+  if (!manager) {
+    res.status(404).json({ message: 'Manager not found' });
+    return;
+  }
+
+  if (manager.role !== 'field_manager') {
+    res.status(403).json({ message: 'User must be a field manager' });
+    return;
+  }
   
   const field = fieldRepository.create({
     name,
     location,
     capacity,
     description,
-    pricePerHour
+    pricePerHour,
+    address,
+    maxPlayersCount,
+    fieldSize,
+    hasShower,
+    hasCover,
+    priceFrom,
+    priceTo,
+    manager
   });
 
   await fieldRepository.save(field);
@@ -54,12 +90,44 @@ router.post('/', asyncHandler(async (req, res) => {
 
 // Update field
 router.put('/:id', asyncHandler(async (req, res) => {
-  const { name, location, capacity, description, pricePerHour } = req.body;
-  const field = await fieldRepository.findOneBy({ id: req.params.id });
+  const { 
+    name, 
+    location, 
+    capacity, 
+    description, 
+    pricePerHour,
+    address,
+    maxPlayersCount,
+    fieldSize,
+    hasShower,
+    hasCover,
+    priceFrom,
+    priceTo,
+    managerId
+  } = req.body;
+  
+  const field = await fieldRepository.findOne({
+    where: { id: req.params.id },
+    relations: ['manager']
+  });
   
   if (!field) {
     res.status(404).json({ message: 'Field not found' });
     return;
+  }
+
+  // Check if manager is being changed
+  if (managerId && managerId !== field.manager.id) {
+    const newManager = await userRepository.findOneBy({ id: managerId });
+    if (!newManager) {
+      res.status(404).json({ message: 'New manager not found' });
+      return;
+    }
+    if (newManager.role !== 'field_manager') {
+      res.status(403).json({ message: 'New manager must be a field manager' });
+      return;
+    }
+    field.manager = newManager;
   }
 
   field.name = name;
@@ -67,6 +135,13 @@ router.put('/:id', asyncHandler(async (req, res) => {
   field.capacity = capacity;
   field.description = description;
   field.pricePerHour = pricePerHour;
+  field.address = address;
+  field.maxPlayersCount = maxPlayersCount;
+  field.fieldSize = fieldSize;
+  field.hasShower = hasShower;
+  field.hasCover = hasCover;
+  field.priceFrom = priceFrom;
+  field.priceTo = priceTo;
 
   await fieldRepository.save(field);
   res.json(field);
@@ -80,6 +155,15 @@ router.delete('/:id', asyncHandler(async (req, res) => {
     return;
   }
   res.status(204).send();
+}));
+
+// Get fields by manager
+router.get('/manager/:managerId', asyncHandler(async (req, res) => {
+  const fields = await fieldRepository.find({
+    where: { manager: { id: req.params.managerId } },
+    relations: ['schedules']
+  });
+  res.json(fields);
 }));
 
 // Get field schedule

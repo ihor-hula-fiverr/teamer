@@ -1,167 +1,202 @@
 import { createDatabaseConnection } from '../config/typeorm';
 import { User } from '../entities/User';
+import { Field } from '../entities/Field';
 import { Team } from '../entities/Team';
 import { TeamMember } from '../entities/TeamMember';
-import { Field } from '../entities/Field';
-import { FieldSchedule } from '../entities/FieldSchedule';
 import { Game } from '../entities/Game';
+import { FieldSchedule } from '../entities/FieldSchedule';
 import { faker } from '@faker-js/faker';
+import bcrypt from 'bcrypt';
 
 async function generateTestData() {
-  console.log('Starting test data generation...');
-  
-  try {
-    console.log('Connecting to database...');
-    const dataSource = await createDatabaseConnection();
-    console.log('Database connection established');
-    
-    // Get repositories
-    const userRepository = dataSource.getRepository(User);
-    const teamRepository = dataSource.getRepository(Team);
-    const teamMemberRepository = dataSource.getRepository(TeamMember);
-    const fieldRepository = dataSource.getRepository(Field);
-    const fieldScheduleRepository = dataSource.getRepository(FieldSchedule);
-    const gameRepository = dataSource.getRepository(Game);
+  const dataSource = await createDatabaseConnection();
+  const userRepository = dataSource.getRepository(User);
+  const fieldRepository = dataSource.getRepository(Field);
+  const teamRepository = dataSource.getRepository(Team);
+  const teamMemberRepository = dataSource.getRepository(TeamMember);
+  const gameRepository = dataSource.getRepository(Game);
+  const fieldScheduleRepository = dataSource.getRepository(FieldSchedule);
 
-    // Clean up existing data
-    console.log('Cleaning up existing data...');
-    await gameRepository.delete({});
-    await fieldScheduleRepository.delete({});
-    await fieldRepository.delete({});
-    await teamMemberRepository.delete({});
-    await teamRepository.delete({});
-    await userRepository.delete({});
-    console.log('Existing data cleaned up');
+  // Clear existing data
+  await fieldScheduleRepository.delete({});
+  await gameRepository.delete({});
+  await teamMemberRepository.delete({});
+  await teamRepository.delete({});
+  await fieldRepository.delete({});
+  await userRepository.delete({});
 
-    console.log('Generating test data...');
+  // Generate users
+  const users = [];
+  const passwordHash = await bcrypt.hash('password123', 10);
 
-    // Generate users
-    console.log('Generating users...');
-    const users = Array.from({ length: 200 }, () => {
-      const user = new User();
-      user.name = faker.person.fullName();
-      user.email = faker.internet.email();
-      user.passwordHash = '$2a$10$X7J3Q5v8Y5Z9A0B1C2D3E4F5G6H7I8J9K0L1M2N3O4P5Q6R7S8T9U0V1W2X3Y4Z'; // Default test password hash
-      return user;
-    });
-    await userRepository.save(users);
-    console.log('Generated 200 users');
-
-    // Generate teams
-    console.log('Generating teams...');
-    const teams = Array.from({ length: 100 }, () => {
-      const team = new Team();
-      team.name = faker.company.name();
-      team.description = faker.lorem.sentence();
-      team.createdBy = faker.helpers.arrayElement(users).id;
-      return team;
-    });
-    await teamRepository.save(teams);
-    console.log('Generated 100 teams');
-
-    // Add users to teams
-    console.log('Adding users to teams...');
-    for (const team of teams) {
-      const membersCount = faker.number.int({ min: 7, max: 15 });
-      const selectedUsers = faker.helpers.shuffle(users).slice(0, membersCount);
-      
-      for (const user of selectedUsers) {
-        const member = new TeamMember();
-        member.team = team;
-        member.user = user;
-        member.role = faker.helpers.arrayElement(['admin', 'member']);
-        await teamMemberRepository.save(member);
-      }
-    }
-    console.log('Added users to teams');
-
-    // Generate fields
-    console.log('Generating fields...');
-    const fields = Array.from({ length: 50 }, (_, index) => {
-      const field = new Field();
-      field.name = faker.company.name() + ' Field';
-      field.location = index < 20 ? 'Kyiv' : faker.location.city(); // First 20 fields in Kyiv
-      field.capacity = faker.number.int({ min: 10, max: 22 });
-      field.description = faker.lorem.sentence();
-      field.pricePerHour = faker.number.int({ min: 50, max: 200 });
-      field.imageUrl = `/assets/images/${(index % 10) + 1}.jpg`; // Cycle through images 1-10
-      return field;
-    });
-    await fieldRepository.save(fields);
-    console.log('Generated 50 fields');
-
-    // Generate field schedules
-    console.log('Generating field schedules...');
-    for (const field of fields) {
-      const schedules = Array.from({ length: 30 }, (_, i) => { // Generate schedules for next 30 days
-        const schedule = new FieldSchedule();
-        schedule.field = field;
-        schedule.date = new Date(Date.now() + i * 24 * 60 * 60 * 1000);
-        
-        const startTime = new Date(schedule.date);
-        startTime.setHours(8, 0, 0, 0); // Start earlier at 8 AM
-        schedule.startTime = startTime.toISOString();
-        
-        const endTime = new Date(schedule.date);
-        endTime.setHours(22, 0, 0, 0); // End later at 10 PM
-        schedule.endTime = endTime.toISOString();
-        
-        schedule.status = 'available';
-        return schedule;
-      });
-      await fieldScheduleRepository.save(schedules);
-    }
-    console.log('Generated field schedules');
-
-    // Generate games
-    console.log('Generating games...');
-    const kyivFields = fields.filter(f => f.location === 'Kyiv');
-    const games = Array.from({ length: 1000 }, (_, i) => {
-      const game = new Game();
-      game.field = i < 400 ? faker.helpers.arrayElement(kyivFields) : faker.helpers.arrayElement(fields); // 40% of games in Kyiv
-      
-      // Ensure teams are different
-      game.teamA = faker.helpers.arrayElement(teams);
-      do {
-        game.teamB = faker.helpers.arrayElement(teams);
-      } while (game.teamB.id === game.teamA.id);
-      
-      // Create games spread across next 4 weeks
-      const today = new Date();
-      game.date = new Date(today);
-      game.date.setDate(today.getDate() + faker.number.int({ min: 0, max: 28 })); // Random day in next 4 weeks
-      
-      // Set game time between 8 AM and 10 PM with duration between 1.5 and 2.5 hours
-      const startHour = faker.number.int({ min: 8, max: 20 }); // Latest start at 8 PM to ensure end before 10 PM
-      game.startTime = new Date(game.date);
-      game.startTime.setHours(startHour, faker.helpers.arrayElement([0, 30]), 0, 0);
-      
-      game.endTime = new Date(game.startTime);
-      const durationInMinutes = faker.number.int({ min: 90, max: 150 }); // 1.5 to 2.5 hours
-      game.endTime.setMinutes(game.endTime.getMinutes() + durationInMinutes);
-      
-      game.status = faker.helpers.arrayElement(['scheduled', 'in_progress', 'completed']);
-      
-      if (game.status === 'completed') {
-        game.score = {
-          teamA: faker.number.int({ min: 0, max: 7 }),
-          teamB: faker.number.int({ min: 0, max: 7 })
-        };
-      }
-      return game;
-    });
-    await gameRepository.save(games);
-    console.log('Generated 1000 games');
-
-    console.log('Test data generation completed successfully!');
-  } catch (error) {
-    console.error('Error generating test data:', error);
-    throw error;
+  // Generate regular users
+  for (let i = 0; i < 180; i++) {
+    users.push(
+      userRepository.create({
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        password: passwordHash,
+        role: 'user'
+      })
+    );
   }
+
+  // Generate field managers
+  for (let i = 0; i < 15; i++) {
+    users.push(
+      userRepository.create({
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        password: passwordHash,
+        role: 'field_manager'
+      })
+    );
+  }
+
+  // Generate game organizers
+  for (let i = 0; i < 5; i++) {
+    users.push(
+      userRepository.create({
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        password: passwordHash,
+        role: 'game_organizer'
+      })
+    );
+  }
+
+  await userRepository.save(users);
+
+  // Generate fields
+  const fields = [];
+  const fieldManagers = users.filter(user => user.role === 'field_manager');
+
+  for (let i = 0; i < 50; i++) {
+    const manager = faker.helpers.arrayElement(fieldManagers);
+    const priceFrom = faker.number.float({ min: 20, max: 50, fractionDigits: 2 });
+    const priceTo = faker.number.float({ min: priceFrom, max: 100, fractionDigits: 2 });
+
+    fields.push(
+      fieldRepository.create({
+        name: faker.company.name() + ' Field',
+        location: faker.location.city(),
+        address: faker.location.streetAddress(),
+        capacity: faker.number.int({ min: 10, max: 30 }),
+        description: faker.lorem.paragraph(),
+        pricePerHour: faker.number.float({ min: 20, max: 100, fractionDigits: 2 }),
+        maxPlayersCount: faker.number.int({ min: 5, max: 20 }),
+        fieldSize: `${faker.number.int({ min: 15, max: 30 })}m X ${faker.number.int({ min: 15, max: 30 })}m`,
+        hasShower: faker.datatype.boolean(),
+        hasCover: faker.datatype.boolean(),
+        priceFrom,
+        priceTo,
+        manager,
+        imageUrl: faker.image.urlLoremFlickr({ category: 'sports' })
+      })
+    );
+  }
+
+  await fieldRepository.save(fields);
+
+  // Generate teams
+  const teams = [];
+  const regularUsers = users.filter(user => user.role === 'user');
+
+  for (let i = 0; i < 100; i++) {
+    const creator = faker.helpers.arrayElement(regularUsers);
+    teams.push(
+      teamRepository.create({
+        name: faker.company.name() + ' FC',
+        description: faker.lorem.sentence(),
+        createdBy: creator.id
+      })
+    );
+  }
+
+  await teamRepository.save(teams);
+
+  // Generate team members
+  const teamMembers = [];
+  for (const team of teams) {
+    const memberCount = faker.number.int({ min: 5, max: 15 });
+    const selectedUsers = faker.helpers.arrayElements(regularUsers, memberCount);
+
+    for (const user of selectedUsers) {
+      teamMembers.push(
+        teamMemberRepository.create({
+          team,
+          user,
+          role: user.id === team.createdBy ? 'admin' : 'member'
+        })
+      );
+    }
+  }
+
+  await teamMemberRepository.save(teamMembers);
+
+  // Generate games
+  const games = [];
+  const gameOrganizers = users.filter(user => user.role === 'game_organizer');
+
+  for (let i = 0; i < 1000; i++) {
+    const field = faker.helpers.arrayElement(fields);
+    const teamA = faker.helpers.arrayElement(teams);
+    let teamB;
+    do {
+      teamB = faker.helpers.arrayElement(teams);
+    } while (teamB.id === teamA.id);
+
+    const date = faker.date.future();
+    const startTime = new Date(date);
+    startTime.setHours(faker.number.int({ min: 8, max: 20 }));
+    startTime.setMinutes(faker.helpers.arrayElement([0, 30]));
+
+    const endTime = new Date(startTime);
+    endTime.setHours(startTime.getHours() + faker.number.int({ min: 1, max: 3 }));
+
+    games.push(
+      gameRepository.create({
+        field,
+        teamA,
+        teamB,
+        date,
+        startTime,
+        endTime,
+        status: faker.helpers.arrayElement(['scheduled', 'in_progress', 'completed', 'cancelled'])
+      })
+    );
+  }
+
+  await gameRepository.save(games);
+
+  // Generate field schedules
+  const schedules = [];
+  for (const field of fields) {
+    for (let i = 0; i < 30; i++) {
+      const date = faker.date.future();
+      const startTime = new Date(date);
+      startTime.setHours(faker.number.int({ min: 8, max: 20 }));
+      startTime.setMinutes(faker.helpers.arrayElement([0, 30]));
+
+      const endTime = new Date(startTime);
+      endTime.setHours(startTime.getHours() + faker.number.int({ min: 1, max: 3 }));
+
+      schedules.push(
+        fieldScheduleRepository.create({
+          fieldId: field.id,
+          date,
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          status: faker.helpers.arrayElement(['available', 'booked', 'maintenance'])
+        })
+      );
+    }
+  }
+
+  await fieldScheduleRepository.save(schedules);
+
+  console.log('Test data generated successfully!');
+  await dataSource.destroy();
 }
 
-// Run the script
-generateTestData().catch(error => {
-  console.error('Failed to generate test data:', error);
-  process.exit(1);
-}); 
+generateTestData().catch(console.error); 

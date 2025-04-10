@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'typeorm';
 import { FieldSchedule } from './FieldSchedule';
 import { Field as IField } from '@teamer/shared';
+import { User } from './User';
 
 @Entity()
 export class Field implements Omit<IField, 'id'> {
@@ -25,6 +26,30 @@ export class Field implements Omit<IField, 'id'> {
   @Column({ nullable: true })
   imageUrl?: string;
 
-  @OneToMany(() => FieldSchedule, schedule => schedule.field)
+  @Column({ nullable: true })
+  address?: string;
+
+  @Column({ nullable: true })
+  maxPlayersCount?: number;
+
+  @Column({ nullable: true })
+  fieldSize?: string;
+
+  @Column({ nullable: true })
+  hasShower?: boolean;
+
+  @Column({ nullable: true })
+  hasCover?: boolean;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  priceFrom?: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  priceTo?: number;
+
+  @ManyToOne(() => User, user => user.managedFields)
+  manager!: User;
+
+  @OneToMany(() => FieldSchedule, (schedule) => schedule.field)
   schedules!: FieldSchedule[];
 } 

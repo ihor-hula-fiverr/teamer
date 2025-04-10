@@ -1,9 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
 import { TeamMember } from './TeamMember';
 import { User as IUser } from '@teamer/shared';
+import { Field } from './Field';
 
 @Entity()
-export class User implements IUser {
+export class User implements Omit<IUser, 'id' | 'teamMemberships'> {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -13,19 +14,18 @@ export class User implements IUser {
   @Column()
   name!: string;
 
-  @Column({
-    type: 'varchar',
-    enum: ['admin', 'user'],
-    default: 'user'
-  })
-  role!: 'admin' | 'user';
+  @Column()
+  password!: string;
+
+  @Column({ nullable: true })
+  role?: 'user' | 'field_manager' | 'game_organizer';
 
   @CreateDateColumn()
   createdAt!: Date;
 
-  @Column()
-  passwordHash!: string;
-
   @OneToMany(() => TeamMember, (teamMember) => teamMember.user)
   teamMemberships!: TeamMember[];
+
+  @OneToMany(() => Field, (field) => field.manager)
+  managedFields!: Field[];
 } 

@@ -14,11 +14,9 @@
   "dependencies": {
     "@faker-js/faker": "^9.6.0",
     "@teamer/shared": "workspace:*",
-    "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^3.0.0",
     "@types/dotenv": "^8.2.3",
     "@types/jsonwebtoken": "^9.0.9",
-    "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",

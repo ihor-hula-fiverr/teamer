@@ -15,12 +15,12 @@ async function initializeDatabase() {
     const user1 = new User();
     user1.email = 'user1@example.com';
     user1.name = 'User One';
-    user1.passwordHash = 'dummy_hash_1'; // In a real app, this would be properly hashed
+    user1.password = 'dummy_hash_1'; // In a real app, this would be properly hashed
 
     const user2 = new User();
     user2.email = 'user2@example.com';
     user2.name = 'User Two';
-    user2.passwordHash = 'dummy_hash_2'; // In a real app, this would be properly hashed
+    user2.password = 'dummy_hash_2'; // In a real app, this would be properly hashed
 
     // Save users
     const savedUsers = await connection.manager.save([user1, user2]);

@@ -40,9 +40,11 @@ router.get('/', async (req, res) => {
       field: {
         id: game.field.id,
         name: game.field.name,
-        location: game.field.location,
-        capacity: game.field.capacity,
-        pricePerHour: game.field.pricePerHour,
+        district: game.field.district,
+        address: game.field.address,
+        maxPlayersCount: game.field.maxPlayersCount,
+        priceFrom: game.field.priceFrom,
+        priceTo: game.field.priceTo,
         imageUrl: game.field.imageUrl || `/assets/images/fields/${game.field.id}.jpg`
       },
       teamA: {
@@ -70,31 +72,36 @@ router.get('/', async (req, res) => {
 router.get('/search', async (req, res) => {
   try {
     const { date, city } = req.query;
-    const searchDate = date ? new Date(date as string) : new Date();
+    const searchDate = date ? new Date(date as string).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+
+    if (!city || typeof city !== 'string') {
+      return res.status(400).json({ message: 'City parameter is required and must be a string' });
+    }
 
     // Find fields in the specified city
     const fields = await fieldRepository.find({
       where: {
-        location: city as string
+        district: city
       }
     });
 
-    const fieldIds = fields.map((field: Field) => field.id);
+    if (fields.length === 0) {
+      return res.json([]);
+    }
+
+    const fieldIds = fields.map(field => field.id);
 
     // Find games for these fields on the specified date
-    const games = await gameRepository.find({
-      where: {
-        field: {
-          id: In(fieldIds)
-        },
-        date: Between(
-          startOfDay(searchDate),
-          endOfDay(searchDate)
-        ),
-        status: 'scheduled'
-      },
-      relations: ['field', 'teamA', 'teamB']
-    });
+    const games = await gameRepository
+      .createQueryBuilder('game')
+      .leftJoinAndSelect('game.field', 'field')
+      .leftJoinAndSelect('game.teamA', 'teamA')
+      .leftJoinAndSelect('game.teamB', 'teamB')
+      .where('field.id IN (:...fieldIds)', { fieldIds })
+      .andWhere('game._date = :searchDate', { searchDate: searchDate.split('T')[0] })
+      .andWhere('game.status = :status', { status: 'scheduled' })
+      .orderBy('game.startTime', 'ASC')
+      .getMany();
 
     // Format the response
     const formattedGames = games.map(game => ({
@@ -102,10 +109,23 @@ router.get('/search', async (req, res) => {
       field: {
         id: game.field.id,
         name: game.field.name,
-        location: game.field.location,
-        capacity: game.field.capacity,
-        pricePerHour: game.field.pricePerHour,
-        imageUrl: game.field.imageUrl || `/assets/images/fields/${game.field.id}.jpg`
+        cover: game.field.cover,
+        numberOfSeats: game.field.numberOfSeats,
+        priceFrom: game.field.priceFrom,
+        priceTo: game.field.priceTo,
+        managerPhone: game.field.managerPhone,
+        description: game.field.description,
+        googleMapsLink: game.field.googleMapsLink,
+        latitude: game.field.latitude,
+        longitude: game.field.longitude,
+        maxPlayersCount: game.field.maxPlayersCount,
+        lengthMeters: game.field.lengthMeters,
+        widthMeters: game.field.widthMeters,
+        address: game.field.address,
+        district: game.field.district,
+        imageUrl: game.field.imageUrl,
+        managerId: game.field.managerId,
+        schedules: game.field.schedules
       },
       teamA: {
         id: game.teamA.id,

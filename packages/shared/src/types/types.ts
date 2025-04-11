@@ -2,6 +2,9 @@ export interface FieldSchedule {
   id: string;
   fieldId: string;
   date: Date;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
+  status: 'available' | 'booked' | 'maintenance';
+  bookedBy?: string;
+  gameId?: string;
 } 

@@ -17,8 +17,16 @@ export class Game implements Omit<IGame, 'id' | 'fieldId' | 'teamAId' | 'teamBId
   @ManyToOne(() => Team)
   teamB!: Team;
 
-  @Column('date')
-  date!: Date;
+  @Column({ type: 'date' })
+  private _date!: string;
+
+  get date(): Date {
+    return new Date(this._date);
+  }
+
+  set date(value: Date) {
+    this._date = value.toISOString().split('T')[0];
+  }
 
   @Column('timestamp', { nullable: true })
   startTime?: Date;

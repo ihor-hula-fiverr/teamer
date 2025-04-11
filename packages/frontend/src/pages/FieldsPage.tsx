@@ -11,7 +11,12 @@ const FieldsPage: React.FC = () => {
     const fetchFields = async () => {
       try {
         const data = await fieldApi.getAll();
-        setFields(data);
+        // Add imageUrl to each field
+        const fieldsWithImages = data.map((field, index) => ({
+          ...field,
+          imageUrl: `/assets/images/${(index % 57) + 1}.jpg` // Use modulo to cycle through available images (1-57)
+        }));
+        setFields(fieldsWithImages);
       } catch (error) {
         console.error('Error fetching fields:', error);
       } finally {
@@ -36,50 +41,44 @@ const FieldsPage: React.FC = () => {
         Football Fields
       </Typography>
       <Grid container spacing={3}>
-        {fields.map((field, index) => {
-          // Use modulo to cycle through available images (1-10)
-          const imageNumber = (index % 10) + 1;
-          return (
-            <Grid item xs={12} sm={6} md={4} key={field.id}>
-              <Card>
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={`/assets/images/${imageNumber}.jpg`}
-                  alt={field.name}
-                  sx={{ objectFit: 'cover' }}
-                />
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {field.name}
+        {fields.map((field) => (
+          <Grid item xs={12} sm={6} md={4} key={field.id}>
+            <Card>
+              <CardMedia
+                component="img"
+                height="200"
+                image={field.imageUrl}
+                alt={field.name}
+                sx={{ objectFit: 'cover' }}
+              />
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  {field.name}
+                </Typography>
+                <Typography color="textSecondary" gutterBottom>
+                  {field.district}, {field.address}
+                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Chip
+                    label={`Up to ${field.maxPlayersCount} players`}
+                    size="small"
+                    sx={{ mr: 1 }}
+                  />
+                  <Chip
+                    label={`${field.priceFrom}-${field.priceTo} UAH/hour`}
+                    size="small"
+                    color="primary"
+                  />
+                </Box>
+                {field.description && (
+                  <Typography variant="body2" color="textSecondary">
+                    {field.description}
                   </Typography>
-                  <Typography color="textSecondary" gutterBottom>
-                    {field.location}
-                  </Typography>
-                  <Box sx={{ mb: 2 }}>
-                    <Chip
-                      label={`Capacity: ${field.capacity} players`}
-                      size="small"
-                      sx={{ mr: 1 }}
-                    />
-                    {field.pricePerHour && (
-                      <Chip
-                        label={`${field.pricePerHour} UAH/hour`}
-                        size="small"
-                        color="primary"
-                      />
-                    )}
-                  </Box>
-                  {field.description && (
-                    <Typography variant="body2" color="textSecondary">
-                      {field.description}
-                    </Typography>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
-          );
-        })}
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
       </Grid>
     </Box>
   );

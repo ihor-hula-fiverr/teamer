@@ -1,9 +1,13 @@
+import { UserRole } from './UserRole';
+
 export interface User {
   id: string;
   email: string;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  role: UserRole;
+  phoneNumber?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Team {

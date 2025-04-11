@@ -56,7 +56,7 @@ router.post('/', asyncHandler(async (req, res) => {
 
 // Update user
 router.put('/:id', asyncHandler(async (req, res) => {
-  const { name } = req.body;
+  const { name, role } = req.body;
   const user = await userRepository.findOneBy({ id: req.params.id });
   
   if (!user) {
@@ -64,7 +64,41 @@ router.put('/:id', asyncHandler(async (req, res) => {
     return;
   }
 
-  user.name = name;
+  if (name) {
+    user.name = name;
+  }
+
+  if (role && ['user', 'field_manager', 'game_organizer'].includes(role)) {
+    user.role = role;
+  }
+
+  await userRepository.save(user);
+  
+  res.json({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    createdAt: user.createdAt
+  });
+}));
+
+// Update user role
+router.patch('/:id/role', asyncHandler(async (req, res) => {
+  const { role } = req.body;
+  const user = await userRepository.findOneBy({ id: req.params.id });
+  
+  if (!user) {
+    res.status(404).json({ message: 'User not found' });
+    return;
+  }
+
+  if (!['user', 'field_manager', 'game_organizer'].includes(role)) {
+    res.status(400).json({ message: 'Invalid role' });
+    return;
+  }
+
+  user.role = role;
   await userRepository.save(user);
   
   res.json({

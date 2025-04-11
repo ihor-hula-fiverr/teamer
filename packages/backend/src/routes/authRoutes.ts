@@ -30,6 +30,7 @@ createDatabaseConnection().then(dataSource => {
           email: profile.emails?.[0]?.value || '',
           name: profile.displayName || '',
           passwordHash: '', // No password needed for Google auth
+          role: 'user'
         });
         await userRepository.save(user);
       }
@@ -120,6 +121,7 @@ router.post('/register', async (req, res) => {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role || 'user'
       },
     });
   } catch (error) {
@@ -158,6 +160,7 @@ router.post('/login', async (req, res) => {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role || 'user'
       },
     });
   } catch (error) {
@@ -185,6 +188,7 @@ router.get('/me', async (req, res) => {
       id: user.id,
       email: user.email,
       name: user.name,
+      role: user.role || 'user'
     });
   } catch (error) {
     console.error('Get user error:', error);

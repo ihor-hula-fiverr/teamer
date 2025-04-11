@@ -42,18 +42,21 @@ router.get('/:id', asyncHandler(async (req, res) => {
 // Create field
 router.post('/', asyncHandler(async (req, res) => {
   const { 
-    name, 
-    location, 
-    capacity, 
-    description, 
-    pricePerHour,
-    address,
-    maxPlayersCount,
-    fieldSize,
-    hasShower,
-    hasCover,
+    name,
+    cover,
+    numberOfSeats,
     priceFrom,
     priceTo,
+    description,
+    googleMapsLink,
+    latitude,
+    longitude,
+    maxPlayersCount,
+    lengthMeters,
+    widthMeters,
+    address,
+    district,
+    imageUrl,
     managerId
   } = req.body;
   
@@ -70,17 +73,21 @@ router.post('/', asyncHandler(async (req, res) => {
   
   const field = fieldRepository.create({
     name,
-    location,
-    capacity,
+    cover: cover || 'no',
+    numberOfSeats: numberOfSeats || 0,
+    priceFrom: priceFrom || 1000,
+    priceTo: priceTo || 2000,
     description,
-    pricePerHour,
+    googleMapsLink,
+    latitude: latitude || 50.4501,
+    longitude: longitude || 30.5234,
+    maxPlayersCount: maxPlayersCount || 10,
+    lengthMeters: lengthMeters || 40,
+    widthMeters: widthMeters || 20,
     address,
-    maxPlayersCount,
-    fieldSize,
-    hasShower,
-    hasCover,
-    priceFrom,
-    priceTo,
+    district: district || 'Default District',
+    imageUrl: imageUrl || 'https://example.com/default-field-image.jpg',
+    managerId,
     manager
   });
 

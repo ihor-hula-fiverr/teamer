@@ -5,12 +5,14 @@ const API_BASE_URL = 'http://localhost:8080/api';
 
 interface AuthContextType {
   user: User | null;
+  setUser: (user: User | null) => void;
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,8 +39,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               id: userData.id,
               email: userData.email,
               name: userData.name,
-              createdAt: new Date(userData.createdAt || Date.now()),
-              updatedAt: new Date(userData.updatedAt || Date.now())
+              role: userData.role || 'user',
+              createdAt: userData.createdAt || new Date().toISOString(),
+              updatedAt: userData.updatedAt || new Date().toISOString()
             });
           } else {
             localStorage.removeItem('token');
@@ -55,8 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     if (token) {
-      localStorage.setItem('token', token);
-      checkAuth();
+      handleGoogleCallback(token);
       // Remove token from URL
       window.history.replaceState({}, document.title, window.location.pathname);
     } else {
@@ -83,7 +85,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const data = await response.json();
       localStorage.setItem('token', data.token);
-      setUser(data.user);
+      setUser({
+        id: data.user.id,
+        email: data.user.email,
+        name: data.user.name,
+        role: data.user.role || 'user',
+        createdAt: data.user.createdAt || new Date().toISOString(),
+        updatedAt: data.user.updatedAt || new Date().toISOString()
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
       throw err;
@@ -116,8 +125,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: data.user.id,
         email: data.user.email,
         name: data.user.name,
-        createdAt: new Date(data.user.createdAt || Date.now()),
-        updatedAt: new Date(data.user.updatedAt || Date.now())
+        role: data.user.role || 'user',
+        createdAt: data.user.createdAt || new Date().toISOString(),
+        updatedAt: data.user.updatedAt || new Date().toISOString()
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
@@ -134,6 +144,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       window.location.href = `${API_BASE_URL}/auth/google`;
     } catch (err) {
       setError('Google sign in failed');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add a function to handle Google OAuth callback
+  const handleGoogleCallback = async (token: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      localStorage.setItem('token', token);
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const userData = await response.json();
+        setUser({
+          id: userData.id,
+          email: userData.email,
+          name: userData.name,
+          role: userData.role || 'user',
+          createdAt: userData.createdAt || new Date().toISOString(),
+          updatedAt: userData.updatedAt || new Date().toISOString()
+        });
+      }
+    } catch (err) {
+      setError('Failed to get user data after Google sign in');
       throw err;
     } finally {
       setLoading(false);
@@ -158,12 +198,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         loading,
         error,
         login,
         register,
         logout,
         signInWithGoogle,
+        isAuthenticated: !!user,
       }}
     >
       {children}

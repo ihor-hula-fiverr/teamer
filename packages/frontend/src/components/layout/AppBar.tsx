@@ -18,7 +18,8 @@ import {
   Person as PersonIcon,
   Logout as LogoutIcon,
   Settings as SettingsIcon,
-  Help as HelpIcon
+  Help as HelpIcon,
+  SportsSoccer as SportsSoccerIcon
 } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../common';
@@ -133,6 +134,21 @@ export const AppBar: React.FC<AppBarProps> = ({ onMenuClick }) => {
                 </ListItemIcon>
                 Profile
               </MenuItem>
+              {user?.role === 'field_manager' ? (
+                <MenuItem component={Link} to="/managers/fields">
+                  <ListItemIcon>
+                    <SportsSoccerIcon fontSize="small" />
+                  </ListItemIcon>
+                  My Fields
+                </MenuItem>
+              ) : (
+                <MenuItem component={Link} to="/managers">
+                  <ListItemIcon>
+                    <SportsSoccerIcon fontSize="small" />
+                  </ListItemIcon>
+                  Become a Field Manager
+                </MenuItem>
+              )}
               <MenuItem component={Link} to="/settings">
                 <ListItemIcon>
                   <SettingsIcon fontSize="small" />

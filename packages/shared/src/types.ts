@@ -48,6 +48,6 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'user';
+  role: 'user' | 'field_manager' | 'game_organizer';
   createdAt: Date;
 } 
